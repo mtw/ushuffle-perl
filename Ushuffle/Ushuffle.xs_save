@@ -1,0 +1,32 @@
+#include "EXTERN.h"
+#include "perl.h"
+#include "XSUB.h"
+
+#include "ppport.h"
+
+#include "ushufflelib/ushuffle.h"
+
+#include "const-c.inc"
+
+MODULE = Ushuffle		PACKAGE = Ushuffle		
+
+INCLUDE: const-xs.inc
+
+void 
+shuffle(s, t, l, k)
+	char * s
+	char * t
+	int l
+	int k
+	
+void 
+shuffle1(ss, ll, kk)
+	char *ss
+	int ll
+	int kk
+
+void 
+shuffle2(ttt)
+	char *ttt
+	OUTPUT:
+		ttt

@@ -1,0 +1,20 @@
+#! /opt/perl5/bin/perl
+
+use ExtUtils::testlib;
+use Ushuffle;
+$in = "ACACGUAGAUGGGGA";
+$out = "aaaaaaaaaaaaaaA";
+$l = 15;
+$k = 2;
+print "In : ", $in, "\n";
+Ushuffle::shuffle($in, $out, $l, $k);
+print "Out: ", $out, "\n";
+Ushuffle::shuffle2($out);
+print "Out: ", $out, "\n";
+Ushuffle::shuffle2($out);
+print "Out: ", $out, "\n";
+Ushuffle::shuffle1($in, $l, $k);
+Ushuffle::shuffle2($out);
+print "Out: ", $out, "\n";
+Ushuffle::shuffle2($out);
+print "Out: ", $out, "\n";
