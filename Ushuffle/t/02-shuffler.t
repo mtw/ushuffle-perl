@@ -151,6 +151,30 @@ is(Ushuffle::Shuffler->new('ACGUACGU', 2**40)->shuffle, 'ACGUACGU', 'k beyond th
     isa_ok $sub, 'My::Shuffler';
     isa_ok $sub, 'Ushuffle::Shuffler';
     is bad_shuffles($sub, 5), 0, 'subclass instance shuffles';
+
+    my $from_sub = $sub->new('UUGGCCAAUGCAUGCAGGCC', 3);
+    isa_ok $from_sub, 'My::Shuffler', 'new called on a subclass instance';
+    my $from_obj = $shuffler->new('UUGGCCAAUGCAUGCAGGCC', 3);
+    isa_ok $from_obj, 'Ushuffle::Shuffler', 'new called on an instance';
+    is $from_obj->sequence, 'UUGGCCAAUGCAUGCAGGCC', '... takes the new sequence';
+    is $from_obj->k, 3, '... and the new k';
+    is bad_shuffles($from_obj, 5), 0, '... and shuffles';
+    is $shuffler->sequence, $seq, '... leaving the original instance alone';
+}
+
+# an explicit DESTROY call must not lead to a double free
+{
+    my $doomed = Ushuffle::Shuffler->new($seq, 2);
+    $doomed->shuffle;
+    $doomed->DESTROY;
+    ok !eval { $doomed->shuffle; 1 }, 'a method after an explicit DESTROY fails';
+    like $@, qr/already been destroyed/, '... with a clear message';
+    ok !eval { $doomed->sequence; 1 }, 'sequence after an explicit DESTROY fails';
+    $doomed->DESTROY;
+    pass 'DESTROY can be called again';
+    undef $doomed;
+    pass 'and the object can go out of scope';
+    is bad_shuffles($shuffler, 5), 0, 'other shufflers are unaffected';
 }
 
 done_testing;

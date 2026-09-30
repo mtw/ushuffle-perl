@@ -149,14 +149,21 @@ MODULE = Ushuffle		PACKAGE = Ushuffle::Shuffler
 
 SV *
 new(class, sequence, k)
-	const char *class
+	SV *class
 	SV *sequence
 	SV *k
     PREINIT:
 	shuffler *self;
-	const char *s;
+	const char *name, *s;
 	int len, let;
     CODE:
+	/* called on an object, new makes another object of the same class */
+	if (SvROK(class) && SvOBJECT(SvRV(class)))
+		name = HvNAME(SvSTASH(SvRV(class)));
+	else
+		name = SvOK(class) ? SvPV_nolen(class) : NULL;
+	if (!name || !*name)
+		croak("Ushuffle::Shuffler::new: class name expected");
 	let = checked_k(aTHX_ k);
 	s = checked_sequence(aTHX_ sequence, &len);
 	Newx(self, 1, shuffler);
@@ -166,7 +173,7 @@ new(class, sequence, k)
 	LIBRARY_LOCK;
 	self->id = next_id++;
 	LIBRARY_UNLOCK;
-	RETVAL = sv_setref_pv(newSV(0), class, (void *) self);
+	RETVAL = sv_setref_pv(newSV(0), name, (void *) self);
     OUTPUT:
 	RETVAL
 
@@ -195,11 +202,23 @@ k(self)
 	RETVAL
 
 void
-DESTROY(self)
-	Ushuffle::Shuffler self
+DESTROY(object)
+	SV *object
+    PREINIT:
+	SV *referent;
+	shuffler *self;
     CODE:
-	Safefree(self->seq);
-	Safefree(self);
+	/* tolerant, since it also runs during global destruction; the pointer
+	 * is zeroed so that an explicit DESTROY call cannot free twice */
+	if (!SvROK(object) || !sv_derived_from(object, "Ushuffle::Shuffler"))
+		XSRETURN_EMPTY;
+	referent = SvRV(object);
+	self = INT2PTR(shuffler *, SvIV(referent));
+	if (self) {
+		Safefree(self->seq);
+		Safefree(self);
+		sv_setiv(referent, 0);
+	}
 
 int
 CLONE_SKIP(...)
