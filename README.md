@@ -1,4 +1,4 @@
-# Ushuffle
+# uShuffle-perl
 
 A Perl interface to [uShuffle](https://doi.org/10.1186/1471-2105-9-192), a C library that shuffles a sequence while preserving its exact k-let counts.
 
