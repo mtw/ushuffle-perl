@@ -1,0 +1,100 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: Ushuffle
+
+jobs:
+  linux:
+    name: Linux, Perl ${{ matrix.perl }}${{ matrix.threads && ' with threads' || '' }}
+    # a pull request from a branch of this repository is already tested by its push
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # the recent releases, and 5.10 as the oldest perl the module supports
+        perl: ['5.44', '5.42', '5.40', '5.38', '5.36', '5.10']
+        threads: [false, true]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: ${{ matrix.perl }}
+          multi-thread: ${{ matrix.threads }}
+          enable-modules-cache: false
+      - name: Show the perl in use
+        run: perl -V:version -V:archname -V:useithreads
+      - name: Build
+        run: |
+          perl Makefile.PL
+          make
+      - name: Test
+        run: make test
+
+  macos:
+    name: macOS, Perl 5.44 with threads
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: '5.44'
+          multi-thread: true
+          enable-modules-cache: false
+      - name: Show the perl in use
+        run: perl -V:version -V:archname -V:useithreads
+      - name: Build
+        run: |
+          perl Makefile.PL
+          make
+      - name: Test
+        run: make test
+
+  # Windows is not tested: the uShuffle library needs random() and srandom().
+
+  distribution:
+    name: Distribution tarball
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: '5.44'
+          multi-thread: true
+          enable-modules-cache: false
+      - name: Install Test::Pod, which enables the POD syntax tests
+        run: cpanm --notest --quiet Test::Pod
+      - name: Build
+        run: |
+          perl Makefile.PL
+          make
+      - name: Test, including the 25 million nucleotide case
+        run: make test
+        env:
+          EXTENDED_TESTING: 1
+      - name: Build the tarball and test what it contains
+        run: make disttest
+      - name: Create the tarball
+        run: make dist
+      - uses: actions/upload-artifact@v7
+        # act, which runs this workflow locally, cannot store artifacts from this action
+        if: ${{ !env.ACT }}
+        with:
+          name: Ushuffle-tarball
+          path: Ushuffle/Ushuffle-*.tar.gz
+          if-no-files-found: error
