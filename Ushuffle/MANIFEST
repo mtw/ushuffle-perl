@@ -9,9 +9,16 @@ Ushuffle.xs
 ushuffle_lib.c
 lib/Ushuffle.pm
 lib/Ushuffle/Shuffler.pod
+t/00-load.t
 t/01-shuffle.t
 t/02-shuffler.t
 t/03-seed.t
 t/04-errors.t
+t/05-exhaustive.t
+t/06-inputs.t
+t/07-large.t
+t/08-threads.t
+t/09-distribution.t
+t/lib/UshuffleTest.pm
 ushufflelib/ushuffle.c
 ushufflelib/ushuffle.h
