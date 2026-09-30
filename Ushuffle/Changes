@@ -7,6 +7,9 @@ Revision history for Perl extension Ushuffle.
 	- removed shuffle($s, $t, $l, $k), shuffle1 and shuffle2, which wrote
 	  into a caller-supplied buffer without checking its size
 	- the random number generator is seeded when the module is loaded
+	- safe to use from several threads; calls into the library are
+	  serialized
+	- requires perl 5.10.1
 	- bundled library updated to https://github.com/s-will/ushuffle v1.2.2
 	  plus a fix for an integer overflow in the hash function on sequences
 	  of tens of millions of characters

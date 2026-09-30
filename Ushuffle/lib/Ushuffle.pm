@@ -1,6 +1,6 @@
 package Ushuffle;
 
-use 5.008001;
+use 5.010001;
 use strict;
 use warnings;
 
@@ -9,6 +9,9 @@ our @ISA       = ('Exporter');
 our @EXPORT_OK = qw(shuffle set_seed);
 
 our $VERSION = '0.02';
+
+# the class is defined in the XS file
+$Ushuffle::Shuffler::VERSION = $VERSION;
 
 require XSLoader;
 XSLoader::load('Ushuffle', $VERSION);
@@ -19,6 +22,10 @@ __END__
 =head1 NAME
 
 Ushuffle - shuffle sequences while preserving their k-let counts
+
+=head1 VERSION
+
+This document describes Ushuffle version 0.02.
 
 =head1 SYNOPSIS
 
@@ -37,12 +44,37 @@ Ushuffle - shuffle sequences while preserving their k-let counts
 =head1 DESCRIPTION
 
 This module is a Perl interface to the uShuffle library by Minghui Jiang,
-James Anderson, Joel Gillespie and Martin Mayne. uShuffle produces uniformly
-random permutations of a sequence that have exactly the same k-let counts as
-the original, for any let size k: the same single-letter composition for k=1,
+James Anderson, Joel Gillespie and Martin Mayne. uShuffle produces random
+permutations of a sequence that have exactly the same k-let counts as the
+original, for any let size k: the same single-letter composition for k=1,
 the same dinucleotide counts for k=2, and so on. Such shuffles are the usual
 null model when assessing the significance of a feature of a biological
-sequence.
+sequence, such as the folding energy of an RNA or the number of occurrences
+of a motif.
+
+A shuffle for let size k has these properties:
+
+=over 4
+
+=item *
+
+It contains every k-let exactly as often as the original sequence does. As a
+consequence the same holds for all shorter lets, down to the single letters.
+
+=item *
+
+Its first k-1 and its last k-1 letters are those of the original sequence,
+in the same place.
+
+=item *
+
+Every sequence that meets these conditions is equally likely to be returned.
+The original sequence is one of them.
+
+=back
+
+The sequences need not be biological. Any string of bytes other than NUL can
+be shuffled, and upper and lower case letters are different letters.
 
 =head1 FUNCTIONS
 
@@ -52,11 +84,15 @@ Both functions can be imported on request; nothing is exported by default.
 
   my $shuffled = shuffle($sequence, $k);
 
-Returns a new random permutation of C<$sequence> with the same k-let counts.
+Returns a new shuffle of C<$sequence> for let size C<$k>. The sequence itself
+is not modified.
+
 C<$k> must be a positive integer. With C<$k> of 1 the result is a plain
-permutation of the letters; if C<$k> is at least the length of the sequence,
-the only permutation with the same k-let counts is the sequence itself, and a
-copy is returned.
+permutation of the letters. If C<$k> is at least the length of the sequence,
+the sequence is its own only shuffle, and a copy is returned.
+
+The function dies if the sequence is undefined, contains a NUL byte or a
+character above 255, or if C<$k> is not a positive integer.
 
 =head2 set_seed
 
@@ -66,60 +102,64 @@ Seeds the random number generator with the unsigned integer C<$seed>. The
 same seed followed by the same calls gives the same shuffles. See L</RANDOM
 NUMBERS>.
 
-=head1 Ushuffle::Shuffler
-
-A shuffler prepares a sequence once and then hands out any number of
-shuffles. This is about twice as fast as calling C<shuffle> repeatedly,
-provided the shuffles of one shuffler are not interleaved with those of
-another (see L</LIMITATIONS>).
-
-=head2 new
+=head1 SHUFFLER OBJECTS
 
   my $shuffler = Ushuffle::Shuffler->new($sequence, $k);
-
-Takes the same arguments as C<shuffle>. The shuffler keeps its own copy of
-the sequence.
-
-=head2 shuffle
-
   my $shuffled = $shuffler->shuffle;
 
-Returns a new shuffle on every call.
-
-=head2 sequence
-
-  my $sequence = $shuffler->sequence;
-
-Returns the sequence the shuffler was created with.
-
-=head2 k
-
-  my $k = $shuffler->k;
-
-Returns the let size the shuffler was created with.
+A shuffler prepares a sequence once and then hands out any number of
+shuffles, which is about twice as fast as calling C<shuffle> every time. The
+class is loaded together with this module and is described in
+L<Ushuffle::Shuffler>.
 
 =head1 RANDOM NUMBERS
 
 The library draws its random numbers from the C library's C<random()>. The
 generator is seeded from the clock and the process id when the module is
 loaded, so separate runs give different shuffles; call C<set_seed> for
-reproducible ones. The generator's state is shared by the whole process: a
-child created with C<fork> continues with the same state as its parent and
-should call C<set_seed> itself, and other code calling C<random()> or
-C<srandom()> affects the shuffles.
+reproducible ones. After C<set_seed($seed)>, a new shuffler returns the same
+shuffles that the library's C<ushuffle> command-line program prints for the
+same sequence, let size and C<-seed $seed> on the same system.
+
+The generator's state is shared by the whole process: a child created with
+C<fork> continues with the same state as its parent and should call
+C<set_seed> itself, and other code calling C<random()> or C<srandom()>
+affects the shuffles. Perl's own C<rand> and C<srand> use a different
+generator and neither affect the shuffles nor are affected by them.
+
+=head1 THREADS
+
+The module can be used from several threads at once. The library's prepared
+sequence and the random number generator exist once per process, so the
+module lets only one thread at a time into the library. Threads therefore do
+not make shuffling faster; use separate processes for that.
+
+A shuffler belongs to the thread that created it. In a thread started later,
+a variable holding a shuffler of the parent thread no longer holds an object,
+and the thread has to create its own.
+
+All threads draw from the same generator. C<set_seed> gives reproducible
+shuffles only while a single thread is shuffling.
+
+Load the module before starting threads, as C<use Ushuffle> does. Loading it
+for the first time from several threads at the same moment is not supported.
 
 =head1 LIMITATIONS
 
 Sequences are treated as strings of bytes. A sequence must not contain NUL
-bytes or characters above 255, and must be shorter than 2**31 bytes.
+bytes or characters above 255, and must be shorter than 2**31 bytes. The
+result is always a byte string.
 
 The library holds the prepared form of one sequence at a time. Using several
 shufflers side by side is safe, but each switch from one shuffler to another,
 and each call of the C<shuffle> function in between, makes the next
-C<< $shuffler->shuffle >> prepare its sequence again.
+C<< $shuffler->shuffle >> prepare its sequence again. This holds across
+threads as well.
 
-The module is not thread safe, and shufflers are not carried over into new
-threads. If it runs out of memory, the library terminates the process.
+Preparing a sequence temporarily takes roughly 30 bytes of memory per
+letter.
+
+If it runs out of memory, the library terminates the process.
 
 =head1 INCOMPATIBLE CHANGES
 
@@ -128,7 +168,15 @@ C<Ushuffle::shuffle($s, $t, $l, $k)>, C<Ushuffle::shuffle1($s, $l, $k)> and
 C<Ushuffle::shuffle2($t)>, which wrote the result into a preallocated C<$t>.
 Those have been replaced by the interface described above.
 
+=head1 DEPENDENCIES
+
+Perl 5.10.1 or later. Building the module needs a C compiler and a C library
+that provides C<random()> and C<srandom()>; Windows is therefore not
+supported. No Perl modules outside the core are required.
+
 =head1 SEE ALSO
+
+L<Ushuffle::Shuffler>
 
 Minghui Jiang, James Anderson, Joel Gillespie and Martin Mayne. uShuffle: a
 useful tool for shuffling biological sequences while preserving the k-let
@@ -138,10 +186,23 @@ L<https://doi.org/10.1186/1471-2105-9-192>
 The bundled library source is taken from
 L<https://github.com/s-will/ushuffle>.
 
+=head1 SUPPORT
+
+Please report bugs and send suggestions through the issue tracker at
+L<https://github.com/mtw/ushuffle-perl/issues>.
+
+=head1 AUTHOR
+
+Michael T. Wolfinger E<lt>michael@wolfinger.euE<gt>
+
+The uShuffle library was written by Minghui Jiang, James Anderson, Joel
+Gillespie and Martin Mayne.
+
 =head1 COPYRIGHT AND LICENSE
 
-The uShuffle library in F<ushufflelib/> is distributed under the following
-terms:
+The Perl interface is Copyright (c) 2026 Michael T. Wolfinger. It is
+distributed under the same terms as the uShuffle library in F<ushufflelib/>,
+which are:
 
   Copyright (c) 2007
     Minghui Jiang, James Anderson, Joel Gillespie, and Martin Mayne.

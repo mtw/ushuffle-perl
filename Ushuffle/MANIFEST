@@ -1,4 +1,5 @@
 Changes
+LICENSE
 Makefile.PL
 MANIFEST
 README
@@ -7,6 +8,7 @@ typemap
 Ushuffle.xs
 ushuffle_lib.c
 lib/Ushuffle.pm
+lib/Ushuffle/Shuffler.pod
 t/01-shuffle.t
 t/02-shuffler.t
 t/03-seed.t
