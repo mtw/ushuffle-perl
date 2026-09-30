@@ -100,7 +100,7 @@ character above 255, or if C<$k> is not a positive integer.
 
 Seeds the random number generator with the unsigned integer C<$seed>. The
 same seed followed by the same calls gives the same shuffles. See L</RANDOM
-NUMBERS>.
+NUMBERS>. Note that the C library treats a seed of 0 as 1.
 
 =head1 SHUFFLER OBJECTS
 

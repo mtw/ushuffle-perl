@@ -110,6 +110,10 @@ for my $method (qw(shuffle sequence k)) {
 }
 like error_of(sub { Ushuffle::Shuffler->shuffle }), qr/Ushuffle::Shuffler/,
     'shuffle called on the class';
+like error_of(sub { no warnings; Ushuffle::Shuffler::new(undef, $seq, 2) }), qr/class name expected/,
+    'new without a class name';
+like error_of(sub { Ushuffle::Shuffler::new('', $seq, 2) }), qr/class name expected/,
+    'new with an empty class name';
 like error_of(sub { Ushuffle::Shuffler->no_such_method }), qr/Can't locate object method/,
     'unknown method';
 

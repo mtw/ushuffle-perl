@@ -120,6 +120,11 @@ for my $interface (@interfaces) {
         utf8::upgrade(my $ascii = $seq);
         ok same_klets($seq, $call->($ascii, 2), 2), "$name: upgraded ASCII string";
 
+        # a literal with non-ASCII characters under "use utf8" is a read-only
+        # string whose internal form is UTF-8
+        my $out_literal = do { use utf8; $call->("AéCAéGAéCÿAÿ", 2) };
+        ok same_klets($latin, $out_literal, 2), "$name: read-only literal in UTF-8 form";
+
         utf8::upgrade(my $k = '2');
         ok same_klets($seq, $call->($seq, $k), 2), "$name: upgraded k";
     }

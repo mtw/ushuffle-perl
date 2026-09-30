@@ -47,6 +47,9 @@ character above 255, or if C<$k> is not a positive integer.
 The shuffler keeps its own copy of the sequence. Later changes to
 C<$sequence> do not affect it.
 
+Called on an existing shuffler instead of the class, C<new> returns a new,
+independent shuffler of the same class.
+
 =head2 shuffle
 
   my $shuffled = $shuffler->shuffle;
