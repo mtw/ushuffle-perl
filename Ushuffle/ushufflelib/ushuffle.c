@@ -48,7 +48,7 @@ void set_randfunc(randfunc_t func) {
 
 /* global variables for the Euler algorithm */
 
-static const char *s_ = NULL;
+static char *s_ = NULL;
 static int l_ = 0;
 static int k_ = 0;
 
@@ -100,7 +100,7 @@ static int hcode(int i_sequence) {
 	}
 	if (f < 0.0)
 		f = -f;
-	return (int) (htablesize * f) % htablesize;
+	return (int) ((long long) (htablesize * f) % htablesize);
 }
 
 static void hinit(int size) {
@@ -135,11 +135,16 @@ static void hinsert(int i_sequence) {
 }
 
 /* the Euler algorithm */
-
 void shuffle1(const char *s, int l, int k) {
 	int i, j, n_lets;
 
-	s_ = s;
+	if (s_)
+		free (s_);
+	if ((s_ = malloc(l * sizeof(char))) == NULL) {
+		fprintf(stderr, "shuffle1: malloc failed\n");
+		exit(1);
+	}
+	strncpy(s_, s, l);
 	l_ = l;
 	k_ = k;
 	if (k_ >= l_ || k_ <= 1)	/* two special cases */
