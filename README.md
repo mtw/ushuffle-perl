@@ -3,6 +3,7 @@
 [![CI](https://github.com/mtw/ushuffle-perl/actions/workflows/ci.yml/badge.svg)](https://github.com/mtw/ushuffle-perl/actions/workflows/ci.yml)
 [![CPAN version](https://img.shields.io/cpan/v/Ushuffle)](https://metacpan.org/dist/Ushuffle)
 [![License](https://img.shields.io/badge/license-BSD-blue.svg)](Ushuffle/LICENSE)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23111360.svg)](https://doi.org/10.5281/zenodo.23111360)
 
 A Perl interface to [uShuffle](https://doi.org/10.1186/1471-2105-9-192), a C library that shuffles a sequence while preserving its exact k-let counts.
 
@@ -146,7 +147,7 @@ If you use this module, please cite the uShuffle paper:
 
 > Minghui Jiang, James Anderson, Joel Gillespie and Martin Mayne. uShuffle: a useful tool for shuffling biological sequences while preserving the k-let counts. *BMC Bioinformatics* 9:192, 2008. <https://doi.org/10.1186/1471-2105-9-192>
 
-To refer to this software itself, use the metadata in [`CITATION.cff`](CITATION.cff) or the "Cite this repository" entry on GitHub.
+To refer to this software itself, cite it by its DOI, <https://doi.org/10.5281/zenodo.23111360>, which always resolves to the latest release; each release also has a DOI of its own on [Zenodo](https://doi.org/10.5281/zenodo.23111360). The metadata in [`CITATION.cff`](CITATION.cff) and the "Cite this repository" entry on GitHub give the full reference.
 
 ## Licence
 
