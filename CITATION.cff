@@ -1,0 +1,66 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below, and cite the uShuffle paper listed under references."
+type: software
+title: "uShuffle-perl: a Perl interface to uShuffle"
+abstract: >-
+  Ushuffle is a Perl module that wraps the uShuffle C library of Jiang,
+  Anderson, Gillespie and Mayne. It produces random permutations of a
+  sequence that preserve the exact counts of all k-lets (k-mers), for
+  example all dinucleotide counts of an RNA or DNA sequence, drawn with
+  equal probability from all such permutations. Such shuffles are the
+  standard null model for assessing the significance of sequence features
+  such as RNA folding energies or motif occurrences. The module adds a
+  safe, thread-safe interface, seeding for reproducible results, and a
+  fix for an integer overflow in the library on very long sequences.
+authors:
+  - family-names: Wolfinger
+    given-names: Michael T.
+    email: michael@wolfinger.eu
+    affiliation: RNA Forecast
+    orcid: "https://orcid.org/0000-0003-0925-5205"
+version: "1.00"
+date-released: 2026-10-02
+license: BSD-3-Clause
+repository-code: "https://github.com/mtw/ushuffle-perl"
+url: "https://github.com/mtw/ushuffle-perl"
+keywords:
+  - bioinformatics
+  - computational biology
+  - sequence analysis
+  - sequence shuffling
+  - k-let
+  - k-mer
+  - dinucleotide shuffling
+  - nucleotide shuffling
+  - RNA
+  - DNA
+  - null model
+  - statistical significance
+  - motif analysis
+  - RNA secondary structure
+  - uShuffle
+  - Perl
+  - XS
+references:
+  - type: article
+    title: "uShuffle: a useful tool for shuffling biological sequences while preserving the k-let counts"
+    authors:
+      - family-names: Jiang
+        given-names: Minghui
+      - family-names: Anderson
+        given-names: James
+      - family-names: Gillespie
+        given-names: Joel
+      - family-names: Mayne
+        given-names: Martin
+    journal: "BMC Bioinformatics"
+    volume: 9
+    start: 192
+    year: 2008
+    doi: 10.1186/1471-2105-9-192
+  - type: software
+    title: "ushuffle"
+    authors:
+      - family-names: Will
+        given-names: Sebastian
+    repository-code: "https://github.com/s-will/ushuffle"

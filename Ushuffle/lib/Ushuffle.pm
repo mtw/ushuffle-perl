@@ -8,7 +8,7 @@ require Exporter;
 our @ISA       = ('Exporter');
 our @EXPORT_OK = qw(shuffle set_seed);
 
-our $VERSION = '0.02';
+our $VERSION = '1.00';
 
 # the class is defined in the XS file
 $Ushuffle::Shuffler::VERSION = $VERSION;
@@ -25,7 +25,7 @@ Ushuffle - shuffle sequences while preserving their k-let counts
 
 =head1 VERSION
 
-This document describes Ushuffle version 0.02.
+This document describes Ushuffle version 1.00.
 
 =head1 SYNOPSIS
 

@@ -1,6 +1,7 @@
 Revision history for Perl extension Ushuffle.
 
-0.02
+1.00  2026-10-02
+	- first public release
 	- new interface: shuffle($sequence, $k) returns the shuffled string,
 	  Ushuffle::Shuffler gives repeated shuffles of one sequence, and
 	  set_seed seeds the random number generator

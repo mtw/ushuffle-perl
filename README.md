@@ -1,5 +1,9 @@
 # uShuffle-perl
 
+[![CI](https://github.com/mtw/ushuffle-perl/actions/workflows/ci.yml/badge.svg)](https://github.com/mtw/ushuffle-perl/actions/workflows/ci.yml)
+[![CPAN version](https://img.shields.io/cpan/v/Ushuffle)](https://metacpan.org/dist/Ushuffle)
+[![License](https://img.shields.io/badge/license-BSD-blue.svg)](Ushuffle/LICENSE)
+
 A Perl interface to [uShuffle](https://doi.org/10.1186/1471-2105-9-192), a C library that shuffles a sequence while preserving its exact k-let counts.
 
 Shuffling a nucleotide sequence with k=2 gives a random sequence with the same dinucleotide counts as the original; with k=3 the trinucleotide counts are kept, and so on. Such shuffles are the usual null model for judging whether a feature of a biological sequence, such as the folding energy of an RNA or the number of occurrences of a motif, is more than its composition would produce by chance.
@@ -30,7 +34,15 @@ With k=1 this is a plain permutation of the letters. Sequences need not be biolo
 
 ## Installation
 
-The module is not on CPAN yet. To build it from a checkout you need Perl 5.10.1 or later, a C compiler, and a C library that provides `random()` and `srandom()`. No Perl modules outside the core are required.
+You need Perl 5.10.1 or later, a C compiler, and a C library that provides `random()` and `srandom()`. No Perl modules outside the core are required.
+
+From CPAN:
+
+```sh
+cpanm Ushuffle
+```
+
+From a checkout:
 
 ```sh
 git clone https://github.com/mtw/ushuffle-perl.git
@@ -133,6 +145,8 @@ cd Ushuffle && EXTENDED_TESTING=1 make test
 If you use this module, please cite the uShuffle paper:
 
 > Minghui Jiang, James Anderson, Joel Gillespie and Martin Mayne. uShuffle: a useful tool for shuffling biological sequences while preserving the k-let counts. *BMC Bioinformatics* 9:192, 2008. <https://doi.org/10.1186/1471-2105-9-192>
+
+To refer to this software itself, use the metadata in [`CITATION.cff`](CITATION.cff) or the "Cite this repository" entry on GitHub.
 
 ## Licence
 

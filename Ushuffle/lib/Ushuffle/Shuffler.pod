@@ -4,7 +4,7 @@ Ushuffle::Shuffler - repeated k-let preserving shuffles of one sequence
 
 =head1 VERSION
 
-This document describes Ushuffle::Shuffler as of Ushuffle version 0.02.
+This document describes Ushuffle::Shuffler as of Ushuffle version 1.00.
 
 =head1 SYNOPSIS
 
