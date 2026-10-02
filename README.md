@@ -104,7 +104,7 @@ Preparing a sequence temporarily takes roughly 30 bytes of memory per letter.
 
 ## The bundled library
 
-`Ushuffle/ushufflelib/` contains `ushuffle.c` and `ushuffle.h` from [s-will/ushuffle](https://github.com/s-will/ushuffle), the source of the bioconda `ushuffle` package, at v1.2.2 plus one fix: an integer overflow in the library's hash function that, on sequences of tens of millions of letters, crashes it or slows it down by an order of magnitude. The fix has been submitted upstream as [pull request #1](https://github.com/s-will/ushuffle/pull/1). The files are otherwise unmodified.
+`Ushuffle/ushufflelib/` contains `ushuffle.c` and `ushuffle.h`, unmodified, from the master branch of [s-will/ushuffle](https://github.com/s-will/ushuffle), the source of the bioconda `ushuffle` package, at commit [2c4b8f3](https://github.com/s-will/ushuffle/commit/2c4b8f3) of 1 October 2026. That is release 1.2.2 plus a fix for an integer overflow in the library's hash function, which crashed it or slowed it down by an order of magnitude on sequences of tens of millions of letters. The fix originated in this project and was merged upstream as [pull request #1](https://github.com/s-will/ushuffle/pull/1).
 
 ## Repository layout
 

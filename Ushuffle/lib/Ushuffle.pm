@@ -183,8 +183,8 @@ useful tool for shuffling biological sequences while preserving the k-let
 counts. BMC Bioinformatics 9:192, 2008.
 L<https://doi.org/10.1186/1471-2105-9-192>
 
-The bundled library source is taken from
-L<https://github.com/s-will/ushuffle>.
+The bundled library source is taken unmodified from the master branch of
+L<https://github.com/s-will/ushuffle> (commit 2c4b8f3).
 
 =head1 SUPPORT
 
